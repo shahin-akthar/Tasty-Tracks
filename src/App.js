@@ -29,6 +29,7 @@ const App = () => {
   const toggleSaveRecipe = (recipe) => {
     setSavedRecipes(prevState => {
         const isRecipeSaved = prevState.some(savedRecipe => savedRecipe.id === recipe.id);
+        console.log(recipe.id)
         
         if (isRecipeSaved) {
             return prevState.filter(savedRecipe => savedRecipe.id !== recipe.id);

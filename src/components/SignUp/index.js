@@ -57,7 +57,7 @@ const SignUp = () => {
 
       localStorage.setItem('user', JSON.stringify(email));
 
-      const url = 'http://localhost:3000/sign-up';
+      const url = 'https://aktharrepo.onrender.com/sign-up';
       const options = {
          method: 'POST',
          headers: {

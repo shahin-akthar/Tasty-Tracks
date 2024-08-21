@@ -10,6 +10,7 @@ const NutritionalValues = props => {
     const { isDarkTheme } = useContext(ThemeContext);
     const [nutritionalData, setNutritionalData] = useState([]);
     const { recipeId } = props;
+   
 
     useEffect(() => {
         const fetchRecipeData = async () => {

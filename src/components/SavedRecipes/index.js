@@ -51,7 +51,7 @@ const SavedRecipes = () => {
             </HeadingEl>
             <RowContainer>
                 {filteredRecipes.map(recipe => (
-                    <Recipes key={recipe.id} recipe={recipe} />
+                    <Recipes key={recipe._id} recipe={recipe} />
                 ))}
            </RowContainer>
         </SavedContainer>

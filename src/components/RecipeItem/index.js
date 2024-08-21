@@ -23,7 +23,7 @@ const apiStatusConstants = {
 const RecipeItem = () => {
     const [recipeDetails, setRecipeDetails] = useState({});
     const [apiStatus, setStatus] = useState(apiStatusConstants.initial);
-    const { id } = useParams();
+    const { id } = useParams(); 
     const { isDarkTheme, savedRecipes, toggleSaveRecipe } = useContext(ThemeContext);
     const history = useHistory();
 
@@ -32,7 +32,7 @@ const RecipeItem = () => {
             setStatus(apiStatusConstants.inProgress);
             try {
                 const jwtToken = Cookies.get('jwt_token');
-                const url = `http://localhost:3000/recipes/${id}`;
+                const url = `https://aktharrepo.onrender.com/recipes/${id}`;
                 const options = {
                     method: 'GET',
                     headers: {
@@ -45,15 +45,16 @@ const RecipeItem = () => {
                 if (response.ok) {
                     const data = await response.json();
                     const convertCase = {
-                        id: data.id,
+                        id: data.id, 
                         recipeId: data.recipe_id,
                         recipeImage: data.image,
                         title: data.title,
                         readyInMinutes: data.ready_in_minutes,
                         servings: data.servings,
-                        ingredients: data.ingredients || [], // Ensure ingredients is an array
-                        instructions: data.instructions || '' // Ensure instructions is an empty string if not provided
+                        ingredients: data.ingredients || '[]', 
+                        instructions: data.instructions || '' 
                     };
+                    console.log(convertCase)
                     setRecipeDetails(convertCase);
                     setStatus(apiStatusConstants.success);
                 } else {
@@ -74,29 +75,44 @@ const RecipeItem = () => {
 
     const ingredientUrl = 'https://img.spoonacular.com/ingredients_100x100/';
 
-    const { recipeImage, title, recipeId, readyInMinutes, servings, ingredients, instructions } = recipeDetails;
+    const { recipeImage, title, recipeId, readyInMinutes, servings, ingredients = '[]', instructions } = recipeDetails;
     const cleanedInstructions = cleanContent(instructions);
 
-    // Convert cleanedInstructions HTML into an array of step elements
     const createStepElements = (html) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
-        return Array.from(doc.querySelectorAll('li')).map((li, index) => {
-            const textContent = li.textContent;
-            // Extract the step label and content
-            const [stepLabel, ...stepContentParts] = textContent.split(':');
-            const stepContent = stepContentParts.join(':').trim();
-
-            return (
-                <li key={index} isLabel>
-                    <SpanEl theme={isDarkTheme ? 'dark' : 'light'}>{stepLabel}:</SpanEl> 
-                    <ListItem theme={isDarkTheme ? 'dark' : 'light'}>{stepContent}</ListItem> 
-                </li>
-            );
+        const listItems = Array.from(doc.querySelectorAll('li'));
+      
+        // If there are no <li> elements, log and return an empty array
+        if (listItems.length === 0) {
+          console.warn('No <li> elements found in instructions');
+          return [];
+        }
+      
+        return listItems.map((li, index) => {
+          const textContent = li.textContent.trim();
+          const [stepLabel, ...stepContentParts] = textContent.split(':');
+          const stepContent = stepContentParts.join(':').trim();
+      
+          return (
+            <li key={index} isLabel>
+              <SpanEl theme={isDarkTheme ? 'dark' : 'light'}>{stepLabel}:</SpanEl>
+              <ListItem theme={isDarkTheme ? 'dark' : 'light'}>{stepContent}</ListItem>
+            </li>
+          );
         });
-    };
+      };
+      
 
-    const isSaved = savedRecipes.some(recipeId => recipeId.id === id);
+    const isSaved = savedRecipes.some(recipe => recipe.id === id);
+    console.log(isSaved)
+
+    let parsedIngredients = [];
+    try {
+        parsedIngredients = JSON.parse(ingredients);
+    } catch (error) {
+        console.error("Error parsing ingredients:", error);
+    }
 
     const renderLoader = () => (
         <LoaderContainer data-testid="loader">
@@ -119,7 +135,6 @@ const RecipeItem = () => {
     )
 
     const renderSuccessView = () => {
-
         if (!recipeDetails) {
             return renderNoResults();
         }
@@ -148,7 +163,7 @@ const RecipeItem = () => {
                     Ingredients:-
                 </IngredientHeading>
                 <ContainerOfIngredients>
-                    {ingredients && ingredients.map(ingredient => (
+                    {parsedIngredients.map(ingredient => (
                         <IngredientContainer key={ingredient.id}>
                             <IngredientImage
                                 src={`${ingredientUrl}${ingredient.image}`}

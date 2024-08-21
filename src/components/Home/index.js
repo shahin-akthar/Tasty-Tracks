@@ -58,9 +58,8 @@ const Home = () => {
     const [recipesList, setRecipes] = useState([]);
     const [apiStatus, setStatus] = useState(apiStatusConstants.initial);
 
-    // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
-    const recipesPerPage = 20; // Adjust this to the number of recipes you want per page
+    const recipesPerPage = 20; 
 
     const onChangeSearchInput = (event) => {
         setSearchInput(event.target.value);
@@ -74,7 +73,7 @@ const Home = () => {
         const fetchRecipes = async () => {
             setStatus(apiStatusConstants.inProgress);
             const jwtToken = Cookies.get('jwt_token');
-            const apiUrl = 'http://localhost:3000/get-recipes';
+            const apiUrl = 'https://aktharrepo.onrender.com/get-recipes';
             const options = {
                 method: 'GET',
                 headers: {
@@ -96,6 +95,7 @@ const Home = () => {
                             recipeImage: eachRecipe.image,
                         }))
                     );
+                    console.log(updateList)
                     setRecipes(updateList);
                     setStatus(apiStatusConstants.success);
                 } else {
